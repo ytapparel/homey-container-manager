@@ -63,7 +63,7 @@ Pull requests and suggestions are welcome! See the code for detailed comments an
 
 ## License
 
-This project is licensed under the MIT License. See `License.md` for details, including icon attributions and third-party notices.
+This project is licensed under the MIT License. See `LICENSE` for details, including icon attributions and third-party notices.
 
 - Not affiliated with or endorsed by Docker Inc. or Athom B.V. (Homey).
-- Icon attributions and details are listed in License.md.
+- Icon attributions and details are listed in LICENSE.

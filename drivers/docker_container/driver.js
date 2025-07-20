@@ -2,7 +2,6 @@
 
 const Homey = require('homey');
 const fs = require('fs');
-const DRIVER_LOCATION = "/app/io.ytapparel.container/drivers/docker_container/";
 const { Client } = require('ssh2');
 const path = require('path');
 
