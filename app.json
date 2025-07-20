@@ -1,0 +1,188 @@
+{
+  "id": "io.ytapparel.container",
+  "version": "0.1.0",
+  "compatibility": ">=12.3.0",
+  "sdk": 3,
+  "description": {
+    "en": "Manage and monitor your Docker containers on remote hosts via SSH. Add, control, and automate containers as if they were native Homey devices.",
+    "fr": "Gérez et surveillez vos conteneurs Docker sur des hôtes distants via SSH. Ajoutez, contrôlez et automatisez vos conteneurs comme s'ils étaient natifs dans Homey."
+  },
+  "name": {
+    "en": "Container Manager for Docker",
+    "fr": "Gestionnaire de conteneurs Docker"
+  },
+  "tags": {
+    "en": [
+      "virtual container"
+    ],
+    "fr": [
+      "conteneur virtuel"
+    ]
+  },
+  "author": {
+    "name": "ytapparel"
+  },
+  "contributors": {},
+  "source": "https://github.com/ytapparel/homey-container-manager",
+  "bugs": {
+    "url": "https://github.com/ytapparel/homey-container-manager/issues"
+  },
+  "athomForumDiscussionId": 3065,
+  "homeyCommunityTopicId": 1723,
+  "images": {
+    "large": "./assets/images/large.png",
+    "small": "./assets/images/small.png"
+  },
+  "category": "tools",
+  "flow": {
+    "triggers": [
+      {
+        "id": "device_changed",
+        "title": {
+          "en": "A virtual container changed",
+          "fr": "Un conteneur virtuel a changé"
+        },
+        "tokens": [
+          {
+            "name": "value",
+            "title": {
+              "en": "value",
+              "fr": "valeur"
+            },
+            "example": {
+              "en": "true",
+              "fr": "vrai"
+            }
+          },
+          {
+            "name": "variable",
+            "title": {
+              "en": "variable",
+              "fr": "variable"
+            },
+            "example": {
+              "en": "onoff",
+              "fr": "onoff"
+            }
+          },
+          {
+            "name": "container",
+            "title": {
+              "en": "container",
+              "fr": "conteneur"
+            },
+            "example": {
+              "en": "Virtual Container",
+              "fr": "Conteneur virtuel"
+            }
+          }
+        ]
+      },
+      {
+        "id": "press",
+        "title": {
+          "en": "Pressed / changed",
+          "fr": "Appuyé / changé"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=docker_container"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "reboot_container",
+        "title": { "en": "Reboot Docker container" },
+        "titleFormatted": { "en": "Reboot container" },
+        "args": [
+          { "name": "device", "type": "device", "filter": "driver_id=docker_container" }
+        ]
+      },
+      {
+        "id": "refresh_container_state",
+        "title": { "en": "Refresh Docker container state" },
+        "titleFormatted": { "en": "Refresh state" },
+        "args": [
+          { "name": "device", "type": "device", "filter": "driver_id=docker_container" }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "container_status_is",
+        "title": {
+          "en": "Container status is",
+          "fr": "Le statut du container est"
+        },
+        "titleFormatted": {
+          "en": "Container status is [[status]]",
+          "fr": "Le statut du container est [[status]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=docker_container"
+          },
+          {
+            "name": "status",
+            "type": "dropdown",
+            "multiple": true,
+            "values": [
+              { "id": "created", "title": { "en": "created", "fr": "created" } },
+              { "id": "restarting", "title": { "en": "restarting", "fr": "restarting" } },
+              { "id": "running", "title": { "en": "running", "fr": "running" } },
+              { "id": "removing", "title": { "en": "removing", "fr": "removing" } },
+              { "id": "paused", "title": { "en": "paused", "fr": "paused" } },
+              { "id": "exited", "title": { "en": "exited", "fr": "exited" } },
+              { "id": "dead", "title": { "en": "dead", "fr": "dead" } }
+            ]
+          }
+        ],
+        "output": [
+          {
+            "name": "container_status",
+            "type": "text",
+            "title": { "en": "Container status", "fr": "Statut du container" }
+          }
+        ]
+      }
+    ]
+  },
+  "brandColor": "#0e3a53",
+  "drivers": [
+    {
+      "id": "docker_container",
+      "name": {
+        "en": "Container",
+        "fr": "Conteneur"
+      },
+      "images": {
+        "large": "drivers/docker_container/assets/images/large.png",
+        "small": "drivers/docker_container/assets/images/small.png"
+      },
+      "class": "service",
+      "capabilities": [
+        "onoff"
+      ],
+      "settings": [
+        {
+          "id": "refresh",
+          "type": "number",
+          "label": { "en": "Refresh in seconds", "fr": "Rafraîchir en secondes" },
+          "value": 300
+        }
+      ],
+      "pair": [
+        { "id": "ssh" },
+        { "id": "select_container", "navigation": { "prev": "ssh" } },
+        { "id": "icon", "navigation": { "prev": "select_container" } },
+        { "id": "done" }
+      ]
+    }
+  ]
+}

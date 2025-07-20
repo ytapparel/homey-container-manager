@@ -1,0 +1,17 @@
+{
+  "capabilities": [
+    "onoff",
+    "container_state"
+  ],
+  "capabilitiesOptions": {
+    "container_state": {
+      "title": {
+        "en": "Container State",
+        "fr": "État du conteneur"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    }
+  }
+} 

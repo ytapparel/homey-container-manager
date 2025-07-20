@@ -1,0 +1,147 @@
+<style>
+  .icon-section-title {
+    font-size: 1.08em;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #222;
+    display: block;
+  }
+  .icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    justify-content: flex-start;
+  }
+  .vd-icon-tile {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 10px 6px 10px;
+    cursor: pointer;
+    transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    min-height: 80px;
+    background: #fff;
+  }
+  .vd-icon-tile.selected, .vd-icon-tile:hover {
+    border: 1.5px solid #00c139;
+    background: #f6fff9;
+  }
+  .vd-icon {
+    display: block;
+    width: 48px;
+    height: 48px;
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center center;
+    -webkit-mask-repeat: no-repeat;
+    background: #333;
+    margin-bottom: 8px;
+  }
+  .icon-label {
+    margin-top: 2px;
+    word-break: break-all;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+  .custom-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .custom-preview img {
+    margin-bottom: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: none;
+  }
+  .button {
+    color: #222 !important;
+    transition: background 0.18s, opacity 0.18s;
+  }
+</style>
+<script src='../../../assets/vue.min.js'></script>
+<script>
+  var imgBase64 = '';
+  var customIconReady = false;
+  var customIconName = '';
+
+  Homey.setTitle(__('pair.title.device'));
+
+  new Vue({
+    el: '#icon-chooser',
+    data: {
+      icons: [],
+      selected: '',
+      customPreview: '',
+      customReady: false,
+      customName: ''
+    },
+    mounted() {
+      Homey.emit('getIcons', null, (err, icons) => {
+        if (!err && icons) this.icons = icons;
+      });
+    },
+    methods: {
+      setIcon(icon) {
+        this.selected = icon.name;
+        Homey.emit('setIcon', { icon }, (err, result) => {
+          if (!err) Homey.nextView();
+        });
+      },
+      loadCustomIcon(event) {
+        const img = event.target.files[0];
+        if (!img) {
+          this.customPreview = '';
+          this.customReady = false;
+          return;
+        }
+        this.customName = img.name;
+        const reader = new FileReader();
+        reader.readAsDataURL(img);
+        reader.onload = () => {
+          imgBase64 = reader.result;
+          this.customPreview = imgBase64;
+          this.customReady = true;
+        };
+      },
+      saveCustomIcon() {
+        if (!imgBase64) return;
+        Homey.emit('saveIcon', imgBase64)
+          .then(() => Homey.nextView())
+          .catch(error => {
+            Homey.alert(error.message, 'error');
+            Homey.done();
+          });
+      }
+    }
+  });
+</script>
+
+<div id="icon-chooser">
+  <span class="icon-section-title" data-i18n="pair.select.icon.custom">{{ __('pair.select.icon.custom') }}</span>
+  <div class="form-group">
+    <input id="custom-icon" type="file" accept=".svg" name="image" @change="loadCustomIcon">
+  </div>
+  <div v-if="customPreview" class="custom-preview">
+    <div class="vd-icon-tile" style="margin-bottom:8px; cursor:default;">
+      <img :src="customPreview" alt="Custom icon preview" style="width:48px;height:48px;object-fit:contain; background:#fff; border-radius:6px;" />
+      <span class="icon-label">{{ customName }}</span>
+    </div>
+    <button class="button" :disabled="!customPreview" @click="saveCustomIcon" data-i18n="pair.button.icon.use">{{ __('pair.button.icon.use') }}</button>
+  </div>
+
+  <span class="icon-section-title" data-i18n="pair.select.icon.standard">{{ __('pair.select.icon.standard') }}</span>
+  <div class="icon-grid">
+    <div v-for="(item, index) in icons" :key="index" class="vd-icon-tile" :class="{selected: selected === item.name}" @click="setIcon(item)">
+      <span class="vd-icon" :style="{WebkitMaskImage: 'url(/app/io.ytapparel.container/drivers/docker_container/assets/' + item.location + ')'}"></span>
+      <span class="icon-label">{{ item.name }}</span>
+    </div>
+  </div>
+</div>

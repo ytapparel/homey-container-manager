@@ -1,0 +1,45 @@
+{
+  "pair": {
+    "title": {
+      "done": "Prêt",
+      "icon": "Icône",
+      "device": "Nouveau conteneur Docker"
+    },
+    "button": {
+      "icon": {
+        "use": "Utiliser ceci"
+      }
+    },
+    "select": {
+      "icon": {
+        "custom": "Téléchargez votre propre icône. L'icône doit être au format .svg.",
+        "standard": "...ou sélectionnez une de ces icônes"
+      },
+      "done": "Le conteneur a été ajouté à Homey"
+    },
+    "ssh": {
+      "label": {
+        "host": "Adresse IP ou nom DNS du serveur",
+        "port": "Port SSH",
+        "port_default": "défaut : 22",
+        "user": "Nom d'utilisateur",
+        "password": "Mot de passe SSH",
+        "sudo": "Passer le mot de passe à sudo"
+      },
+      "placeholder": {
+        "host": "192.168.1.100 ou monserveur.local",
+        "user": "root ou pi"
+      },
+      "sudo": {
+        "warning": "À activer uniquement si nécessaire.",
+        "info1": "Si coché, toutes les commandes sudo utiliseront le mot de passe SSH en paramètre (-S). Cela peut présenter un risque.",
+        "info2": "Il est possible de configurer sudo pour ne pas demander de mot de passe pour les commandes Docker (sudoers)."
+      },
+      "button": {
+        "connect": "Se connecter"
+      },
+      "success": "Connexion SSH validée, cliquez sur Continuer.",
+      "info": "Veuillez valider la connexion SSH avant de continuer."
+    }
+  }
+} 

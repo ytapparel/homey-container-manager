@@ -1,0 +1,109 @@
+<style>
+  .form-group { margin-bottom: 15px; }
+  label { display: block; margin-bottom: 5px; }
+  input { width: 100%; padding: 8px; box-sizing: border-box; }
+  .button { margin-top: 10px; }
+</style>
+<script src='../../../assets/vue.min.js'></script>
+<script>
+  Homey.setTitle('SSH Connection');
+  window.vm = {
+    host: '',
+    port: 22,
+    user: '',
+    password: '',
+    forceSudoPassword: false,
+    error: '',
+    connecting: false,
+    connected: false
+  };
+  var vue = new Vue({
+    el: '#ssh-form',
+    data: window.vm,
+    computed: {
+      canConnect() {
+        return !!this.host && !!this.user && !!this.password && !!this.port && !this.connecting && !this.connected;
+      }
+    },
+    methods: {
+      sshConnect() {
+        this.error = '';
+        this.connecting = true;
+        Homey.emit('setSSH', {
+          host: this.host,
+          port: this.port,
+          user: this.user,
+          password: this.password,
+          forceSudoPassword: this.forceSudoPassword
+        }, (err, result) => {
+          this.connecting = false;
+          if (err) {
+            this.error = 'Connexion SSH échouée : ' + err;
+            this.connected = false;
+            return;
+          }
+          this.connected = true;
+          Homey.nextView(); // Automatically go to the next step
+        });
+      }
+    }
+  });
+
+  Homey.on('next', function(callback) {
+    console.log('[PAIR][DEBUG] Homey.on(next) appelé, connected =', window.vm.connected);
+    // Only allow advancing if the SSH connection has been validated
+    if (!window.vm.connected) {
+      Homey.alert('Veuillez valider la connexion SSH avant de continuer.', 'error');
+      window.vm.error = 'Connexion SSH non validée. Cliquez sur "Se connecter".';
+      callback(new Error('Connexion SSH non validée'));
+      return;
+    }
+    callback();
+  });
+
+  // Global Homey error handling (including pairsession_not_found)
+  Homey.on('error', function(err) {
+    if (err && err.message && err.message.indexOf('pairsession_not_found') !== -1) {
+      // Hide the popup and show a custom message or nothing
+      window.vm.error = 'La session de configuration a expiré. Veuillez recommencer.';
+      // Optionally: force a reload or redirect
+      // location.reload();
+      return false; // Prevent popup
+    }
+    // For other errors, default behavior
+    return true;
+  });
+</script>
+<div id="ssh-form">
+  <div class="form-group">
+    <label for="host" data-i18n="pair.ssh.label.host">{{ __('pair.ssh.label.host') }}</label>
+    <input v-model="host" id="host" :placeholder="__('pair.ssh.placeholder.host')" />
+  </div>
+  <div class="form-group">
+    <label for="port" data-i18n="pair.ssh.label.port">{{ __('pair.ssh.label.port') }} <span style="color:#888;font-size:12px;">({{ __('pair.ssh.label.port_default') }})</span></label>
+    <input v-model="port" id="port" type="number" min="1" max="65535" />
+  </div>
+  <div class="form-group">
+    <label for="user" data-i18n="pair.ssh.label.user">{{ __('pair.ssh.label.user') }}</label>
+    <input v-model="user" id="user" :placeholder="__('pair.ssh.placeholder.user')" />
+  </div>
+  <div class="form-group">
+    <label for="password" data-i18n="pair.ssh.label.password">{{ __('pair.ssh.label.password') }}</label>
+    <input v-model="password" id="password" type="password" />
+  </div>
+  <div class="form-group" style="margin-top:20px; padding:12px; background:#f7f7f7; border-radius:6px; border:1px solid #e0e0e0;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+      <input type="checkbox" id="forceSudoPassword" v-model="forceSudoPassword" />
+      <label for="forceSudoPassword" style="font-weight:600; margin:0;" data-i18n="pair.ssh.label.sudo">{{ __('pair.ssh.label.sudo') }}</label>
+    </div>
+    <div style="font-size:12px;color:#888;margin-top:6px;line-height:1.5;">
+      <span style="color:#b00;">{{ __('pair.ssh.sudo.warning') }}</span><br>
+      {{ __('pair.ssh.sudo.info1') }}<br>
+      <span style="color:#888">{{ __('pair.ssh.sudo.info2') }}</span>
+    </div>
+  </div>
+  <div style="color:red; margin-top:10px;min-height:22px;" v-if="!connected && error">{{ error }}</div>
+  <button class="button" :disabled="!canConnect" v-on:click="sshConnect" style="margin-top:18px;" data-i18n="pair.ssh.button.connect">{{ __('pair.ssh.button.connect') }}</button>
+  <div v-if="connected" style="color:green;margin-top:14px;font-weight:600;" data-i18n="pair.ssh.success">{{ __('pair.ssh.success') }}</div>
+  <div v-if="!connected && !error" style="color:#bbb; margin-top:10px; font-size:11px; opacity:0.6;" data-i18n="pair.ssh.info">{{ __('pair.ssh.info') }}</div>
+</div> 

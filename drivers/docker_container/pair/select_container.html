@@ -1,0 +1,55 @@
+<style>
+  .container-list { margin: 20px 0; }
+  .container-item { padding: 10px; border: 1px solid #eee; border-radius: 4px; margin-bottom: 10px; cursor: pointer; background: #f9f9f9; }
+  .container-item.selected { background: #cce5ff; }
+</style>
+<script src='../../../assets/vue.min.js'></script>
+<script>
+  Homey.setTitle('Sélection du container Docker');
+  new Vue({
+    el: '#select-container',
+    data: {
+      containers: [],
+      selected: '',
+      error: '',
+      loading: true
+    },
+    mounted() {
+      Homey.emit('getDockerContainers', null, (err, containers) => {
+        this.loading = false;
+        if (err) {
+          this.error = 'SSH or Docker error: ' + err;
+          return;
+        }
+        this.containers = containers;
+      });
+    },
+    methods: {
+      select(container) {
+        this.selected = container.id;
+        // Immediate save and go to next step
+        Homey.emit('setDockerContainer', { id: container.id, name: container.name }, (err, result) => {
+          if (err) {
+            this.error = 'Error: ' + err;
+            return;
+          }
+          Homey.nextView();
+        });
+      }
+    }
+  });
+</script>
+<div id="select-container">
+  <h2>Select Docker Container</h2>
+  <div v-if="loading">Loading Docker containers...</div>
+  <div v-if="error" style="color:red;">{{ error }}</div>
+  <div class="container-list">
+    <div v-if="!loading && containers.length === 0 && !error" style="color: #888; margin: 20px 0;">
+      No available Docker container to add (all already paired).
+    </div>
+    <div v-for="c in containers" :key="c.id" class="container-item" :class="{selected: selected === c.id}" @click="select(c)">
+      {{ c.name }}
+    </div>
+  </div>
+  <!-- Suppression du bouton Suivant -->
+</div> 

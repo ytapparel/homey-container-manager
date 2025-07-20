@@ -1,0 +1,19 @@
+{
+  "name": "container-manager-for-docker",
+  "version": "0.1.0",
+  "description": "Manage and monitor your Docker containers on remote hosts via SSH. Add, control, and automate containers as if they were native Homey devices.",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ytapparel/homey-container-manager.git"
+  },
+  "author": "ytapparel",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "ssh2": "^1.16.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "pair": {
+    "title": {
+      "done": "Ready",
+      "icon": "Icon",
+      "device": "New Docker Container"
+    },
+    "button": {
+      "icon": {
+        "use": "Use this"
+      }
+    },
+    "select": {
+      "icon": {
+        "custom": "Upload your own icon. The icon has to be in .svg format.",
+        "standard": "...or select one of these icons"
+      },
+      "done": "The container is added to Homey"
+    },
+    "ssh": {
+      "label": {
+        "host": "Host or DNS name",
+        "port": "SSH Port",
+        "port_default": "default: 22",
+        "user": "Username",
+        "password": "SSH Password",
+        "sudo": "Pass password to sudo"
+      },
+      "placeholder": {
+        "host": "192.168.1.100 or myserver.local",
+        "user": "root or pi"
+      },
+      "sudo": {
+        "warning": "Enable only if necessary.",
+        "info1": "If checked, all sudo commands will use the SSH password as parameter (-S). This may present a risk.",
+        "info2": "You can configure sudo to not require a password for Docker commands (sudoers)."
+      },
+      "button": {
+        "connect": "Connect"
+      },
+      "success": "SSH connection validated, click Continue.",
+      "info": "Please validate the SSH connection before continuing."
+    }
+  }
+}
